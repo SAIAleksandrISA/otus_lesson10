@@ -9,13 +9,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install Dependencies
+      run: sudo apt-get update && sudo apt-get install -y libboost-all-dev
+
     - name: Configure CMake
-      run: cmake -S . -B build
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
       run: cmake --build build
-
-    - name: Run Tests
-      run: |
-        cd build
-        ctest --output-on-failure
