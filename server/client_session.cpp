@@ -59,7 +59,7 @@ namespace bulk_server
             });
     }
 
-    void ClientSession::handle_read(const boost::system::error_code& error, std::size_t bytes_transferred)
+    void ClientSession::handle_read(const boost::system::error_code& error, [[maybe_unused]] std::size_t bytes_transferred) // <-- днаюбэ [[maybe_unused]]
     {
         if (error == boost::asio::error::operation_aborted)
         {
@@ -76,14 +76,6 @@ namespace bulk_server
             if (!line.empty() && line.back() == '\r')
             {
                 line.pop_back();
-            }
-
-            if (line.size() >= 3 &&
-                static_cast<unsigned char>(line[0]) == 0xEF &&
-                static_cast<unsigned char>(line[1]) == 0xBB &&
-                static_cast<unsigned char>(line[2]) == 0xBF)
-            {
-                line.erase(0, 3);
             }
 
             if (!line.empty())
