@@ -1,21 +1,21 @@
 #pragma once
 
 #include "interfaces.h"
-#include <fstream>
-#include <string>
 #include <vector>
+#include <string>
 #include <chrono>
-#include <memory>
+#include <fstream>
 
 namespace bulk
 {
     class FileOutputHandler : public IBlockOutputHandler
     {
     public:
-        explicit FileOutputHandler(std::string suffix);
+        FileOutputHandler(std::string suffix);
 
         void handleBlock(const std::vector<std::string>& commands,
-            std::chrono::time_point<std::chrono::system_clock> timestamp) override;
+            std::chrono::time_point<std::chrono::system_clock> timestamp,
+            long long file_id) override;
 
     private:
         std::string m_suffix;

@@ -18,10 +18,10 @@ namespace bulk
 
         void processBuffer(const char* data, size_t size);
         void processEOF();
+        void processCommand(const std::string& command);
 
     private:
         void commitBlock(bool ignore);
-        void processCommand(const std::string& command);
         void resetBlockState();
 
         int m_nSize;

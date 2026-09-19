@@ -1,3 +1,4 @@
+// core/consoleoutputhandler.h
 #pragma once
 
 #include "interfaces.h"
@@ -11,6 +12,7 @@ namespace bulk
     {
     public:
         void handleBlock(const std::vector<std::string>& commands,
-            std::chrono::time_point<std::chrono::system_clock> timestamp) override;
+            std::chrono::time_point<std::chrono::system_clock> timestamp,
+            long long file_id = -1) override;
     };
 }

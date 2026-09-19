@@ -19,7 +19,9 @@ namespace bulk
     }
 
     ThreadManager::ThreadManager()
-        : m_running(false), m_stop_requested(false)
+        : m_running(false)
+        , m_stop_requested(false)
+        , m_file_id_counter(0)
     {
     }
 
@@ -34,13 +36,11 @@ namespace bulk
     {
         if (m_running.load() || m_stop_requested.load())
         {
-            std::cerr << "Warning: ThreadManager is already running or stopping." << std::endl;
             return;
         }
 
         if (!log_handler || !file1_handler || !file2_handler)
         {
-            std::cerr << "Error: Not all output handlers provided to ThreadManager. Cannot start." << std::endl;
             return;
         }
         m_log_handler = std::move(log_handler);
@@ -50,12 +50,10 @@ namespace bulk
         m_running.store(true);
         m_stop_requested.store(false);
 
-
         m_log_thread = std::thread(&ThreadManager::run_log_worker, this);
 
         m_file1_thread = std::thread(&ThreadManager::run_file_worker, this, std::ref(m_shared_file_queue), m_file1_handler.get());
         m_file2_thread = std::thread(&ThreadManager::run_file_worker, this, std::ref(m_shared_file_queue), m_file2_handler.get());
-
     }
 
     void ThreadManager::stop()
@@ -111,7 +109,8 @@ namespace bulk
 
             if (!block_opt.has_value())
             {
-                if (m_stop_requested.load()) {
+                if (m_stop_requested.load())
+                {
                     break;
                 }
                 break;
@@ -123,17 +122,27 @@ namespace bulk
             {
                 m_log_handler->handleBlock(block.m_commands, block.m_timestamp);
             }
-            else 
-                std::cerr << "Error: Log handler is null." << std::endl;
-        };
+            else
+            {
+            }
+        }
     }
 
     void ThreadManager::run_file_worker(ThreadSafeQueue<Block>& file_queue, IBlockOutputHandler* file_handler)
     {
         std::string worker_name = "File Worker ";
-        if (file_handler == m_file1_handler.get()) worker_name += "1";
-        else if (file_handler == m_file2_handler.get()) worker_name += "2";
-        else worker_name += "Unknown";
+        if (file_handler == m_file1_handler.get())
+        {
+            worker_name += "1";
+        }
+        else if (file_handler == m_file2_handler.get())
+        {
+            worker_name += "2";
+        }
+        else
+        {
+            worker_name += "Unknown";
+        }
 
         while (!m_stop_requested.load() || !file_queue.is_empty())
         {
@@ -141,7 +150,10 @@ namespace bulk
 
             if (!block_opt.has_value())
             {
-                if (m_stop_requested.load()) break;
+                if (m_stop_requested.load())
+                {
+                    break;
+                }
                 break;
             }
 
@@ -149,11 +161,12 @@ namespace bulk
 
             if (file_handler)
             {
-                file_handler->handleBlock(block.m_commands, block.m_timestamp);
+                long long current_file_id = m_file_id_counter.fetch_add(1);
+                file_handler->handleBlock(block.m_commands, block.m_timestamp, current_file_id);
             }
-            else 
-                std::cerr << "Error: File handler is null in " << worker_name << "." << std::endl;
+            else
+            {
+            }
         }
     }
-
-} 
+}

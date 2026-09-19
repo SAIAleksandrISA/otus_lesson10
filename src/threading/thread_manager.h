@@ -51,6 +51,8 @@ namespace bulk
         std::unique_ptr<IBlockOutputHandler> m_file1_handler;
         std::unique_ptr<IBlockOutputHandler> m_file2_handler;
 
+        std::atomic<long long> m_file_id_counter;
+
         void join_all_threads();
     };
 

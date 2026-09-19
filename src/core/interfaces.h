@@ -10,11 +10,8 @@ namespace bulk
     {
     public:
         virtual ~IBlockOutputHandler() = default;
-
         virtual void handleBlock(const std::vector<std::string>& commands,
-            std::chrono::time_point<std::chrono::system_clock> times) = 0;
+            std::chrono::time_point<std::chrono::system_clock> timestamp,
+            long long file_id = -1) = 0;
     };
 }
-
-
-

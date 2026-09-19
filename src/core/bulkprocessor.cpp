@@ -1,7 +1,7 @@
 #include "bulkprocessor.h"
 #include <sstream>
 #include <memory>
-
+#include <iostream>
 namespace bulk
 {
 
@@ -18,6 +18,8 @@ namespace bulk
 
     void BulkProcessor::processBuffer(const char* data, size_t size)
     {
+        std::cout << "DEBUG: processBuffer called with size " << size << std::endl; // <-- днаюбхрэ
+
         std::string input = m_bufferRemainder + std::string(data, size);
 
         size_t last_newline = input.find_last_of('\n');
